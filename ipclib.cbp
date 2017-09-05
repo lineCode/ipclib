@@ -28,10 +28,12 @@
 		<Unit filename="include/msgqueue.h" />
 		<Unit filename="include/posix_obj.h" />
 		<Unit filename="include/result.h" />
+		<Unit filename="include/sharedmem.h" />
 		<Unit filename="include/usemaphore.h" />
 		<Unit filename="src/msgqueue.cpp" />
 		<Unit filename="src/posix_obj.cpp" />
 		<Unit filename="src/result.cpp" />
+		<Unit filename="src/sharedmem.cpp" />
 		<Unit filename="src/usemaphore.cpp" />
 		<Extensions>
 			<code_completion />
