@@ -68,41 +68,48 @@ ipclib::Result ipclib::MsgQueue::set_nonblocking(const bool isNonBlocking) const
     else return Result(Result::SUCCESS);
 }
 
-ipclib::Result ipclib::MsgQueue::receive(std::string& theMsg, int theSeconds, long theNanoSeconds) {
+ipclib::Result ipclib::MsgQueue::receive(std::string& theMsg) {
     theMsg = "";
     char* buffer = new char[get_maxmsgsize()];
 
-    if( (theSeconds == 0) && (theNanoSeconds == 0) ) {
-        if( mq_receive(msgq, buffer, get_maxmsgsize(), NULL) != 0 ) { delete [] buffer; return Result(errno, strerror(errno)); }
-    }
-
-    else {
-        timespec theTime;
-        theTime.tv_sec = theSeconds;
-        theTime.tv_nsec = theNanoSeconds;
-
-        if( mq_timedreceive(msgq, buffer, get_maxmsgsize(), NULL, &theTime) != 0 ) { delete [] buffer; return Result(errno, strerror(errno)); }
-    }
+    if( mq_receive(msgq, buffer, get_maxmsgsize(), NULL) != 0 ) { delete [] buffer; return Result(errno, strerror(errno)); }
 
     theMsg = buffer;
     delete[] buffer;
     return Result(Result::SUCCESS);
 }
 
-ipclib::Result ipclib::MsgQueue::send(const std::string& theMsg, int theSeconds, long theNanoSeconds) {
-    if( (theSeconds == 0) && (theNanoSeconds == 0) ) {
-        if( mq_send(msgq, theMsg.c_str(), get_maxmsgsize(), 0) != 0 ) return Result(errno, strerror(errno));
-    }
+ipclib::Result ipclib::MsgQueue::receive(std::string& theMsg, int theSeconds, long theNanoSeconds) {
+    theMsg = "";
+    char* buffer = new char[get_maxmsgsize()];
 
-    else {
-        timespec theTime;
-        theTime.tv_sec = theSeconds;
-        theTime.tv_nsec = theNanoSeconds;
+    timespec theTime;
+    clock_gettime(CLOCK_REALTIME, &theTime);
+    theTime.tv_sec = theTime.tv_sec + theSeconds;
+    theTime.tv_nsec = theTime.tv_nsec + theNanoSeconds;
 
-        if( mq_timedsend(msgq, theMsg.c_str(), get_maxmsgsize(), 0, &theTime) != 0 ) return Result(errno, strerror(errno));
-    }
+    if( mq_timedreceive(msgq, buffer, get_maxmsgsize(), NULL, &theTime) != 0 ) { delete [] buffer; return Result(errno, strerror(errno)); }
 
+
+    theMsg = buffer;
+    delete[] buffer;
     return Result(Result::SUCCESS);
+}
+
+ipclib::Result ipclib::MsgQueue::send(const std::string& theMsg) {
+    if( mq_send(msgq, theMsg.c_str(), get_maxmsgsize(), 0) != 0 ) return Result(errno, strerror(errno));
+    else return Result(Result::SUCCESS);
+
+}
+
+ipclib::Result ipclib::MsgQueue::send(const std::string& theMsg, int theSeconds, long theNanoSeconds) {
+    timespec theTime;
+    clock_gettime(CLOCK_REALTIME, &theTime);
+    theTime.tv_sec = theTime.tv_sec + theSeconds;
+    theTime.tv_nsec = theTime.tv_nsec + theNanoSeconds;
+
+    if( mq_timedsend(msgq, theMsg.c_str(), get_maxmsgsize(), 0, &theTime) != 0 ) return Result(errno, strerror(errno));
+    else return Result(Result::SUCCESS);
 }
 
 ipclib::Result ipclib::MsgQueue::destroy() {
