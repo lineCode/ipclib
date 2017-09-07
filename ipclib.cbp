@@ -23,6 +23,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add directory="include" />
 		</Compiler>
 		<Unit filename="include/msgqueue.h" />
