@@ -72,7 +72,7 @@ ipclib::Result ipclib::MsgQueue::receive(std::string& theMsg) {
     theMsg = "";
     char* buffer = new char[get_maxmsgsize()];
 
-    if( mq_receive(msgq, buffer, get_maxmsgsize(), NULL) != 0 ) { delete [] buffer; return Result(errno, strerror(errno)); }
+    if( mq_receive(msgq, buffer, get_maxmsgsize(), NULL) == -1 ) { delete [] buffer; return Result(errno, strerror(errno)); }
 
     theMsg = buffer;
     delete[] buffer;
@@ -88,7 +88,7 @@ ipclib::Result ipclib::MsgQueue::receive(std::string& theMsg, int theSeconds, lo
     theTime.tv_sec = theTime.tv_sec + theSeconds;
     theTime.tv_nsec = theTime.tv_nsec + theNanoSeconds;
 
-    if( mq_timedreceive(msgq, buffer, get_maxmsgsize(), NULL, &theTime) != 0 ) { delete [] buffer; return Result(errno, strerror(errno)); }
+    if( mq_timedreceive(msgq, buffer, get_maxmsgsize(), NULL, &theTime) == -1 ) { delete [] buffer; return Result(errno, strerror(errno)); }
 
 
     theMsg = buffer;
