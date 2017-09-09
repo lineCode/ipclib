@@ -2,11 +2,11 @@
 
 #include "msgqueue.h"
 
-ipclib::MsgQueue::MsgQueue(const std::string& theName, const bool toCreate, const bool isNonBlocking, const Protection theProtection) : Posix_obj(theName) {
-    init_err = create(name, toCreate, isNonBlocking, theProtection);
+ipclib::MsgQueue::MsgQueue(const std::string& theName, const bool toCreate, const bool isNonBlocking, const Protection theProtection, const bool toCreateExcl) : Posix_obj(theName) {
+    init_err = create(name, toCreate, isNonBlocking, theProtection, toCreateExcl);
 }
 
-ipclib::Result ipclib::MsgQueue::create(const std::string& theName, const bool toCreate, const bool isNonBlocking,const Protection theProtection) {
+ipclib::Result ipclib::MsgQueue::create(const std::string& theName, const bool toCreate, const bool isNonBlocking,const Protection theProtection, const bool toCreateExcl) {
     protection = theProtection;
 
     int oflag;
@@ -16,7 +16,7 @@ ipclib::Result ipclib::MsgQueue::create(const std::string& theName, const bool t
     else oflag = O_RDWR;
 
     if( toCreate ) oflag = oflag | O_CREAT;
-
+    if( toCreateExcl ) oflag = oflag | O_EXCL;
     if( isNonBlocking ) oflag = oflag | O_NONBLOCK;
 
     if( (msgq = mq_open(theName.c_str(), oflag, DEFAULT_PERMISSION, NULL)) == (mqd_t)(-1) ) return Result(errno, strerror(errno));

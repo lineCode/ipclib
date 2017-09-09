@@ -22,11 +22,11 @@ namespace ipclib {
             mqd_t msgq;
             Protection protection;
 
-            Result create(const std::string& theName, const bool toCreate, const bool isNonBlocking, const Protection theProtection);
+            Result create(const std::string& theName, const bool toCreate, const bool isNonBlocking, const Protection theProtection, const bool toCreateExcl);
             Result get_posixattribute(mq_attr* theAttribute) const;
 
         public:
-            MsgQueue(const std::string& theName, const bool toCreate = true, const bool isNonBlocking = false, const Protection theProtection = READ_AND_WRITE);
+            MsgQueue(const std::string& theName, const bool toCreate = true, const bool isNonBlocking = false, const Protection theProtection = READ_AND_WRITE, const bool toCreateExcl = false);
 
             bool is_nonblocking() const;
             bool is_empty() const { return !get_currentmsg(); }
